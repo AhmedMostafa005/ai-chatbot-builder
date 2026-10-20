@@ -72,15 +72,9 @@ def health():
 
 @app.post("/api/bots")  #Create Bot
 def create_bot(payload: BotCreate, tenant_id: str = Depends(tenant), db: Session = Depends(get_db)):
-    bot = Bot(tenant_id=tenant_id, **payload.model_dump()) # we passed the tenant id seperatly because the server should control ownership
-    #We don't want a client to create a bot by claiming it belongs to a different tenant. Therefore, tenant ownership is injected by the backend rather than trusted from the request body.
+    bot = Bot(tenant_id=tenant_id, **payload.model_dump()) 
     db.add(bot); db.commit(); db.refresh(bot)
-    return bot_view(bot) #returns all the attributes of the created bot 
-
-#this function takes the bot data (Bot Create is the bot data schema or how the data should be entered to then be validated by pydantic)
-#needs the tenant id , dependency injection in fastapi is used to inject a custom dependency like tenant for authentication
-#An object of the Bot entity is created and the the payload (Bot Create schema values) are dumped 
-#the bot is added, commited and the the db refreshed
+    return bot_view(bot)
 
 
 @app.get("/api/bots") #List Bots
